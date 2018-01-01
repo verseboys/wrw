@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"  
+	xmlns:p="http://www.springframework.org/schema/p"
+	 xmlns:tx="http://www.springframework.org/schema/tx"  
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+	 http://www.springframework.org/schema/tx  
+     http://www.springframework.org/schema/tx/spring-tx.xsd  
+	http://www.springframework.org/schema/context  
+    http://www.springframework.org/schema/context/spring-context.xsd">
+
+
+ <!-- 定义dbcp数据源 -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+		<!-- 编码转换一定要，不然搜索里面传入的中文值，会显示中文乱码，导致无法搜索到内容 ,正确的写法 -->
+		<!-- 指定JDBc驱动 -->
+		<property name="driverClassName" value="com.mysql.jdbc.Driver">
+		</property>
+		<property name="url"
+			value="jdbc:mysql://localhost:3306/phartmanagedb?useUnicode=true&amp;characterEncoding=UTF-8">
+		</property>
+		<!-- 提供链接数据库的用户名和密码 -->
+		<property name="username" value="root">
+		</property>
+		<property name="password" value="123456">
+		</property>
+	</bean>
+
+
+	<!-- sessionFactory bean定义 该方法没有注解功能 -->
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<!-- 第一种方法 -->
+		<!-- 为AnnotationSessionFactoryBean注入定义好的数据源 -->
+		<property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<!-- 添加Hibernate配置参数 -->
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.format_sql">true</prop>
+				
+				 <prop key="hibernate.current_session_context_class">thread</prop> 
+				<!-- <prop key="javax.persistence.validation.mode">none</prop> -->
+			</props>
+		</property>
+		<!-- 添加对象关系映射文件 -->
+		 <property name="mappingResources">
+			<list>
+			<value>com/wrw/test/pojo/Complaintmanag.hbm.xml</value>
+			<value>com/wrw/test/pojo/Customer.hbm.xml</value>
+			<value>com/wrw/test/pojo/Enterprise.hbm.xml</value>
+			<value>com/wrw/test/pojo/Evaluateuser.hbm.xml</value>
+			<value>com/wrw/test/pojo/Gpp.hbm.xml</value>
+			<value>com/wrw/test/pojo/LocPubBorough.hbm.xml</value>
+			<value>com/wrw/test/pojo/LocPubCity.hbm.xml</value>
+			<value>com/wrw/test/pojo/LocPubProvince.hbm.xml</value>
+			<value>com/wrw/test/pojo/News.hbm.xml</value>
+			<value>com/wrw/test/pojo/Phacreply.hbm.xml</value>
+			<value>com/wrw/test/pojo/Pharmacist.hbm.xml</value>
+			<value>com/wrw/test/pojo/Policies.hbm.xml</value>
+			<value>com/wrw/test/pojo/Role.hbm.xml</value>
+			<value>com/wrw/test/pojo/Superdepartment.hbm.xml</value>
+			
+			<value>com/wrw/test/pojo/Users.hbm.xml</value>
+		
+		
+		
+			</list>
+		</property> 
+
+		<!-- 第二种方法 直接读取 -->
+		 <!-- <property name="configLocation"> <value>classpath:hibernate.cfg.xml</value> 
+			</property> -->
+	</bean>
+	
+	
+	
+	<bean
+		class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor" />
+    <context:component-scan base-package="com.wrw.test" /> 
+	
+<tx:annotation-driven transaction-manager="transactionManager"/>
+
+<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true" />
+
+<!-- 
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="configLocation"
+			value="classpath:hibernate.cfg.xml">
+		</property>
+	</bean> -->
+	
+	
+	
+	
+	
+	
+	
+	
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<tx:annotation-driven transaction-manager="transactionManager" /><bean
+		id="EnterpriseDAO" class="com.wrw.test.dao.EnterpriseDAO">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+</bean>
+	<bean id="EvaluateuserDAO"
+		class="com.wrw.test.dao.EvaluateuserDAO">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="PharmacistDAO" class="com.wrw.test.dao.PharmacistDAO">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="PoliciesDAO" class="com.wrw.test.dao.PoliciesDAO">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="PhacreplyDAO" class="com.wrw.test.dao.PhacreplyDAO">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="CustomerDAO" class="com.wrw.test.dao.CustomerDAO">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="UsersDAO" class="com.wrw.test.dao.UsersDAO">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="NewsDAO" class="com.wrw.test.dao.NewsDAO">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="SuperdepartmentDAO"
+		class="com.wrw.test.dao.SuperdepartmentDAO">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="GppDAO" class="com.wrw.test.dao.GppDAO">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="RoleDAO" class="com.wrw.test.dao.RoleDAO">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="LocPubBoroughDAO"
+		class="com.wrw.test.dao.LocPubBoroughDAO">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="LocPubCityDAO" class="com.wrw.test.dao.LocPubCityDAO">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="LocPubProvinceDAO"
+		class="com.wrw.test.dao.LocPubProvinceDAO">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="ComplaintmanagDAO"
+		class="com.wrw.test.dao.ComplaintmanagDAO">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean></beans>
